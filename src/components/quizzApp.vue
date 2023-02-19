@@ -3,13 +3,31 @@
   <h1>Kana</h1>
   <div class="timeLeft"><span>{{ time }}</span></div>
   <div class="counter" v-show="total">{{correctCounter}} / {{ total }}</div>
-  <div class="kana"> <h2>{{ currentKana.jp }}</h2> </div>
+  <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
   <input type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
   <div><button @click="endSession">End session</button></div>
-  <div v-show="showReport">
+  <!-- Radio option -->
+  <!-- <div class="options">
+    <input v-model="options" 
+           type="checkbox" 
+           value="hiragana" 
+           name="ds" />
+    <label for="ds">hiragana</label>
+    <input v-model="options" 
+           type="checkbox" 
+           value="hiragana combinations" 
+           name="al" />
+    <label for="al">hiragana combinations</label>
+    <input v-model="options"
+             type="checkbox"
+             value="hiragana extended"
+             name="ml" />
+    <label for="ml">hiragana extended</label>
+  </div> -->
+  <div class="report" v-show="showReport">
     <h3>Wrong Answers</h3>
-    <div v-for = "item in wrongAnswers" :key="item.key">
-      <span>{{ item}}</span>
+    <div class="wrongAnswers" v-for = "item in wrongAnswers" :key="item.key">
+      <span>{{ item.kana}} : {{ item.roumaji}}</span>
     </div>
   </div>
   <!-- <p v-show="answer"> You got the answer</p> -->
@@ -23,10 +41,13 @@
 </template>
 
 <script>
+import hiragana from '../assets/json/hiragana.json'
+import katakana from '../assets/json/katakana.json'
 export default {
   name: 'quizzApp',
   data() {
     return {
+      options: [],
       input: '',
       answer: false,
       currentKana: '',
@@ -40,28 +61,9 @@ export default {
       isRUnning: false,
       timer : null,
       showReport: false,
-      kana : [
-  {
-    jp: 'あ',
-    romanji: 'a'
-  },
-  {
-    jp: 'い',
-    romanji: 'i'
-  },
-  {
-    jp: 'う',
-    romanji: 'u'
-  },
-  {
-    jp: 'え',
-    romanji: 'e'
-  },
-  {
-    jp: 'お',
-    romanji: 'o'
-  }
-]
+      hiragana: hiragana,
+      katakana: katakana,
+
     }
   },
   methods: {
@@ -71,7 +73,7 @@ export default {
     },
     checkAnswer(){
       let temp = this.currentKana
-      if(this.input === this.currentKana.romanji) {
+      if(this.input === this.currentKana.roumaji) {
         this.answer = true
         temp.correct = true
         temp.key = this.generateId()
@@ -83,7 +85,8 @@ export default {
     },
 
     pickKana() {
-      this.currentKana = this.kana[Math.floor(Math.random()*this.kana.length)]
+      this.currentKana = this.selectedKana[Math.floor(Math.random()*this.hiragana.length)]
+      console.log(this.currentKana)
       this.input = ''
       this.start()
     },
@@ -97,9 +100,8 @@ export default {
         if(this.time < 0) {
           temp.correct = false
           temp.key = this.generateId()
-          this.wrongAnswers.push(temp.jp)
+          this.wrongAnswers.push(temp)
           this.answers.push(temp)
-          console.log(this.answers)
           this.stop()
         }
       }, 1000);
@@ -117,6 +119,11 @@ export default {
       this.isRUnning = false
       this.timer = 0
       this.showReport = true
+    }
+  },
+  computed: {
+    selectedKana() {
+      return hiragana.concat(katakana).filter(x => x.type != "extended")
     }
   },
   
@@ -180,5 +187,24 @@ input {
 
 button{
   margin-top: 20px;
+}
+
+.options{
+  text-align: left;
+}
+.options input{
+  width: auto;
+}
+
+.wrongAnswers{
+  text-align: left;
+  display: inline-block;
+  border: 1px solid black;
+  padding: 3px;
+  margin-right: 3px
+}
+
+.report{
+  text-align: left;
 }
 </style>
