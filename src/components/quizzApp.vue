@@ -1,10 +1,10 @@
 <template>
 <section class="container">
   <h1>Kana</h1>
-  <div class="timeLeft"><span>{{ time }}</span></div>
+  <div class="timeLeft" v-show="!showReport"><span>{{ time }}</span></div>
   <div class="counter" v-show="total">{{correctCounter}} / {{ total }}</div>
   <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
-  <input type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
+  <input ref="input" type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
   <div><button @click="endSession">End session</button></div>
   <!-- Radio option -->
   <!-- <div class="options">
@@ -25,9 +25,13 @@
     <label for="ml">hiragana extended</label>
   </div> -->
   <div class="report" v-show="showReport">
-    <h3>Wrong Answers</h3>
-    <div class="wrongAnswers" v-for = "item in wrongAnswers" :key="item.key">
-      <span>{{ item.kana}} : {{ item.roumaji}}</span>
+    <h3>Session Report</h3>
+    <span> You got {{ Math.round((correctCounter/total) * 100)|| 0}}%</span>
+    <div v-show="wrongAnswers.length != 0">
+      <h5>Wrong answers : {{ total - correctCounter }}</h5>
+      <div class="wrongAnswers" v-for = "item in wrongAnswers" :key="item.key">
+        <span>{{ item.kana}} : {{ item.roumaji}}</span>
+      </div>
     </div>
   </div>
   <!-- <p v-show="answer"> You got the answer</p> -->
@@ -67,6 +71,9 @@ export default {
     }
   },
   methods: {
+    focusInput() {
+      this.$refs.input.focus();
+    },
     generateId() {
       this.maxId++
       return this.maxId
@@ -128,6 +135,7 @@ export default {
   },
   
   mounted() {
+    this.focusInput();
     this.pickKana()
   }
 
@@ -158,6 +166,9 @@ a {
 h2 {
   font-size: 5em;
   margin: 0;
+}
+h3 {
+  margin-bottom: 20px;
 }
 input {
   width: 50%;
