@@ -1,11 +1,13 @@
 <template>
 <section class="container">
   <h1>Kana</h1>
+  <!-- <lottie-player :src="lottie" background="transparent"  speed="1"  style="width: 300px; height: 300px;" loop autoplay></lottie-player> -->
   <div class="timeLeft" v-show="!showReport"><span>{{ time }}</span></div>
   <div class="counter" v-show="total">{{correctCounter}} / {{ total }}</div>
   <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
   <input ref="input" type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
-  <div><button @click="endSession">End session</button></div>
+  <div v-show="isRUnning"><button @click="endSession">End Quizz</button></div>
+  <div v-show="!isRUnning"><button @click="restart">Start Quizz</button></div>
   <!-- Radio option -->
   <!-- <div class="options">
     <input v-model="options" 
@@ -44,7 +46,8 @@
 </section>
 </template>
 
-<script>
+<script >
+import lottie from '../assets/json/lottie.json'
 import hiragana from '../assets/json/hiragana.json'
 import katakana from '../assets/json/katakana.json'
 export default {
@@ -60,17 +63,29 @@ export default {
       answers: [],
       correctAnswers: [],
       wrongAnswers: [],
-      time : 15,
+      time : null,
       maxId: 0,
       isRUnning: false,
       timer : null,
       showReport: false,
       hiragana: hiragana,
       katakana: katakana,
+      lottie: lottie
 
     }
   },
   methods: {
+    restart() {
+      this.showReport = false;
+      this.isRUnning = true;
+      this.correctAnswers = [];
+      this.total = 0;
+      this.correctCounter = 0;
+      this.wrongAnswers = [],
+      clearInterval(this.timer);
+      this.pickKana();
+      this.focusInput()
+    },
     focusInput() {
       this.$refs.input.focus();
     },
@@ -80,7 +95,7 @@ export default {
     },
     checkAnswer(){
       let temp = this.currentKana
-      if(this.input === this.currentKana.roumaji) {
+      if(this.input === this.currentKana.roumaji || this.input === this.currentKana.kana ) {
         this.answer = true
         temp.correct = true
         temp.key = this.generateId()
@@ -92,6 +107,7 @@ export default {
     },
 
     pickKana() {
+      this.focusInput();
       this.currentKana = this.selectedKana[Math.floor(Math.random()*this.hiragana.length)]
       console.log(this.currentKana)
       this.input = ''
@@ -99,7 +115,7 @@ export default {
     },
     start(){
       let temp = this.currentKana
-      this.time = 10
+      this.time = 5
       this.isRUnning = true
       if(this.isRUnning) {
         this.timer = setInterval(() => {
@@ -135,8 +151,9 @@ export default {
   },
   
   mounted() {
-    this.focusInput();
-    this.pickKana()
+    let Script = document.createElement("script");
+    Script.setAttribute("src", "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js");
+    document.head.appendChild(Script);
   }
 
 
