@@ -1,11 +1,14 @@
 <template>
 <section class="container">
   <h1>Kana</h1>
-  <!-- <lottie-player :src="lottie" background="transparent"  speed="1"  style="width: 300px; height: 300px;" loop autoplay></lottie-player> -->
+  <Vue3Lottie v-show="!isRUnning" :animationData="lottie" :height="200" :width="200" />
   <div class="timeLeft" v-show="!showReport"><span>{{ time }}</span></div>
-  <div class="counter" v-show="total">{{correctCounter}} / {{ total }}</div>
-  <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
-  <input ref="input" type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
+  <div v-show="isRUnning">
+    <div class="counter" v-show="total">{{correctCounter}} / {{ total }}</div>
+    <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
+    <input ref="input" type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
+  </div>
+  
   <div v-show="isRUnning"><button @click="endSession">End Quizz</button></div>
   <div v-show="!isRUnning"><button @click="restart">Start Quizz</button></div>
   <!-- Radio option -->
@@ -75,19 +78,19 @@ export default {
     }
   },
   methods: {
+    focusInput() {
+      this.$refs.input.focus();
+    },
     restart() {
       this.showReport = false;
       this.isRUnning = true;
+      this.$nextTick(() => this.$refs.input.focus())
       this.correctAnswers = [];
       this.total = 0;
       this.correctCounter = 0;
       this.wrongAnswers = [],
       clearInterval(this.timer);
       this.pickKana();
-      this.focusInput()
-    },
-    focusInput() {
-      this.$refs.input.focus();
     },
     generateId() {
       this.maxId++
@@ -151,9 +154,7 @@ export default {
   },
   
   mounted() {
-    let Script = document.createElement("script");
-    Script.setAttribute("src", "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js");
-    document.head.appendChild(Script);
+    // this.focusInput()
   }
 
 
