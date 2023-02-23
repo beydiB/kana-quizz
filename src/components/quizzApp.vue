@@ -11,30 +11,29 @@
   
   <div v-show="isRUnning"><button @click="endSession">End Quizz</button></div>
   <div v-show="!isRUnning"><button @click="restart">Start Quizz</button></div>
-  <!-- Radio option -->
-  <!-- <div class="options">
-    <input v-model="options" 
+  <!-- option -->
+  <div class="options">
+    <div>
+      <input v-model="options" 
            type="checkbox" 
            value="hiragana" 
-           name="ds" />
-    <label for="ds">hiragana</label>
-    <input v-model="options" 
+           name="hiragana" />
+      <label for="hiragana">hiragana</label>
+    </div>
+    <div>
+      <input v-model="options" 
            type="checkbox" 
-           value="hiragana combinations" 
-           name="al" />
-    <label for="al">hiragana combinations</label>
-    <input v-model="options"
-             type="checkbox"
-             value="hiragana extended"
-             name="ml" />
-    <label for="ml">hiragana extended</label>
-  </div> -->
+           value="katakana" 
+           name="katakana" />
+      <label for="katakana">katakana</label>
+    </div>
+  </div>
   <div class="report" v-show="showReport">
     <h3>Session Report</h3>
     <span> You got {{ Math.round((correctCounter/total) * 100)|| 0}}%</span>
-    <div v-show="wrongAnswers.length != 0">
+    <div v-if="wrongAnswers.length != 0">
       <h5>Wrong answers : {{ total - correctCounter }}</h5>
-      <div class="wrongAnswers" v-for = "item in wrongAnswers" :key="item.key">
+      <div class="wrongAnswers" v-for = "item in wrongAnswers" :key="item.kana">
         <span>{{ item.kana}} : {{ item.roumaji}}</span>
       </div>
     </div>
@@ -57,13 +56,13 @@ export default {
   name: 'quizzApp',
   data() {
     return {
-      options: [],
+      options: ['hiragana','katakana'],
       input: '',
       answer: false,
       currentKana: '',
       correctCounter: 0,
       total: 0,
-      answers: [],
+      // answers: [],
       correctAnswers: [],
       wrongAnswers: [],
       time : null,
@@ -83,7 +82,6 @@ export default {
     },
     restart() {
       this.showReport = false;
-      this.isRUnning = true;
       this.$nextTick(() => this.$refs.input.focus())
       this.correctAnswers = [];
       this.total = 0;
@@ -97,13 +95,12 @@ export default {
       return this.maxId
     },
     checkAnswer(){
-      let temp = this.currentKana
+      // let temp = this.currentKana
       if(this.input === this.currentKana.roumaji || this.input === this.currentKana.kana ) {
         this.answer = true
-        temp.correct = true
-        temp.key = this.generateId()
-        // this.currentKana = this.currentKana.correct = true
-        this.answers.push(temp)
+        // temp.correct = true
+        // temp.key = this.generateId()
+        this.correctAnswers.push(this.currentKana)
         this.correctCounter ++
         this.stop()
       } else {this.answer = false}
@@ -111,8 +108,8 @@ export default {
 
     pickKana() {
       this.focusInput();
-      this.currentKana = this.selectedKana[Math.floor(Math.random()*this.hiragana.length)]
-      console.log(this.currentKana)
+      this.currentKana = this.selectedKana[Math.floor(Math.random()*this.selectedKana.length)]
+      // console.log(this.currentKana)
       this.input = ''
       this.start()
     },
@@ -124,10 +121,10 @@ export default {
         this.timer = setInterval(() => {
         this.time --
         if(this.time < 0) {
-          temp.correct = false
-          temp.key = this.generateId()
+          // temp.correct = false
+          temp.key = this.maxId
           this.wrongAnswers.push(temp)
-          this.answers.push(temp)
+          // this.answers.push(temp)
           this.stop()
         }
       }, 1000);
@@ -138,6 +135,7 @@ export default {
       clearInterval(this.timer)
       this.isRUnning = false
       this.total ++
+      this.maxId ++
       this.pickKana()
     },
     endSession() {
@@ -148,9 +146,18 @@ export default {
     }
   },
   computed: {
+    
     selectedKana() {
-      return hiragana.concat(katakana).filter(x => x.type != "extended")
-    }
+      let pair = {'hiragana': hiragana, 'katakana' : katakana}
+      let arr = []
+      for(let i = 0; i < this.options.length; i++) {
+        arr.push(pair[this.options[i]])
+      }
+      // return arr.flat().filter(x => x.type !== "extended")
+      // console.log(pair['katakana'].filter(x => x.type !== 'extended'))
+      console.log(arr.flat())
+      return arr.flat()
+    } 
   },
   
   mounted() {
@@ -235,5 +242,14 @@ button{
 
 .report{
   text-align: left;
+}
+.options {
+  text-align: left;
+  margin-top: 20px;
+  /* display: flex; */
+}
+
+.options input {
+  margin-right: 5px;
 }
 </style>
