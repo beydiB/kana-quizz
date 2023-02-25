@@ -4,7 +4,7 @@
   <Vue3Lottie v-show="!isRUnning" :animationData="lottie" :height="200" :width="200" />
   <div class="timeLeft" v-show="!showReport"><span>{{ time }}</span></div>
   <div v-show="isRUnning">
-    <div class="counter" v-show="total">{{correctCounter}} / {{ total }}</div>
+    <div class="counter" v-show="total">{{ correctCounter }} / {{ total }}</div>
     <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
     <input ref="input" type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
   </div>
@@ -17,14 +17,18 @@
       <input v-model="options" 
            type="checkbox" 
            value="hiragana" 
-           name="hiragana" />
+           name="hiragana"
+           @click="isDisabled($event)"
+            />
       <label for="hiragana">hiragana</label>
     </div>
     <div>
       <input v-model="options" 
            type="checkbox" 
            value="katakana" 
-           name="katakana" />
+           name="katakana" 
+           @click="isDisabled($event)"
+           />
       <label for="katakana">katakana</label>
     </div>
   </div>
@@ -77,6 +81,12 @@ export default {
     }
   },
   methods: {
+    isDisabled(event) {
+      console.log(event.target.value)
+      if(this.options.length === 1 && event.target.value === this.options[0] ) {
+        event.preventDefault();
+      }
+    },
     focusInput() {
       this.$refs.input.focus();
     },
