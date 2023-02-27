@@ -1,6 +1,6 @@
 <template>
 <section class="container">
-  <h1>Kana</h1>
+  <h1>Practice Hiragana & Katakana</h1>
   <Vue3Lottie v-show="!isRUnning" :animationData="lottie" :height="200" :width="200" />
   <div class="timeLeft" v-show="!showReport"><span>{{ time }}</span></div>
   <div v-show="isRUnning">
@@ -8,7 +8,7 @@
     <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
     <input ref="input" type="text" name="" id="inputField" v-model="input" @keyup="checkAnswer">
   </div>
-  
+  <div v-show="this.picked && isRUnning">{{ Math.round((sessionTimeLimit / 60))}}min left</div>
   <div v-show="isRUnning"><button @click="endSession">End Quizz</button></div>
   <div v-show="!isRUnning"><button @click="restart">Start Quizz</button></div>
   <!-- option -->
@@ -31,6 +31,23 @@
            />
       <label for="katakana">katakana</label>
     </div>
+    <h5>How long do you want to practice for?</h5>
+    <div v-show="!isRUnning">
+      <input type="radio" id="one" value="0" v-model="picked" />
+      <label for="one">no timer</label>
+      <input type="radio" id="5min" value= 300 v-model="picked" />
+      <label for="5">5 min</label>
+      <input type="radio" id="10min" value= 600 v-model="picked" />
+      <label for="10">10 min</label>
+      <input type="radio" id="15min" value=900 v-model="picked" />
+      <label for="15">15 min</label>
+      <input type="radio" id="20min" value=1200 v-model="picked" />
+      <label for="20">20 min</label>
+    </div>
+    <!-- <div>
+      <label for="time">time between questions</label>
+      <input v-model="time" type="text" name="time">
+    </div> -->
   </div>
   <div class="report" v-show="showReport">
     <h3>Session Report</h3>
@@ -38,7 +55,7 @@
     <div v-if="wrongAnswers.length != 0">
       <h5>Wrong answers : {{ total - correctCounter }}</h5>
       <div class="wrongAnswers" v-for = "item in wrongAnswers" :key="item.kana">
-        <span>{{ item.kana}} : {{ item.roumaji}}</span>
+        <span>{{ item.kana }} : {{ item.roumaji }}</span>
       </div>
     </div>
   </div>
@@ -76,7 +93,10 @@ export default {
       showReport: false,
       hiragana: hiragana,
       katakana: katakana,
-      lottie: lottie
+      lottie: lottie,
+      sessionTimeLimit: 0,
+      picked: 0,
+      timeInterval: 0
 
     }
   },
@@ -92,12 +112,14 @@ export default {
     },
     restart() {
       this.showReport = false;
-      this.$nextTick(() => this.$refs.input.focus())
+      
       this.correctAnswers = [];
       this.total = 0;
       this.correctCounter = 0;
       this.wrongAnswers = [],
       clearInterval(this.timer);
+      this.sessionTimeLimit = this.picked
+      if(this.picked) this.sessionTimer()
       this.pickKana();
     },
     generateId() {
@@ -117,7 +139,7 @@ export default {
     },
 
     pickKana() {
-      this.focusInput();
+      this.$nextTick(() => this.$refs.input.focus())
       this.currentKana = this.selectedKana[Math.floor(Math.random()*this.selectedKana.length)]
       // console.log(this.currentKana)
       this.input = ''
@@ -150,9 +172,21 @@ export default {
     },
     endSession() {
       clearInterval(this.timer)
+      clearInterval(this.timeInterval)
+      this.picked = 0
       this.isRUnning = false
       this.timer = 0
       this.showReport = true
+    },
+    sessionTimer() {
+      this.timeInterval = setInterval(() => {
+        this.sessionTimeLimit --
+        if(this.sessionTimeLimit <= 0) {
+          // temp.correct = false
+          clearInterval(this.timeInterval)
+          this.endSession()
+        }
+      }, 1000);
     }
   },
   computed: {
@@ -261,5 +295,8 @@ button{
 
 .options input {
   margin-right: 5px;
+}
+h5{
+  margin-bottom: 5px;
 }
 </style>
