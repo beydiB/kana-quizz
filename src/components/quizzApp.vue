@@ -31,18 +31,20 @@
            />
       <label for="katakana">katakana</label>
     </div>
-    <h5>How long do you want to practice for?</h5>
     <div v-show="!isRUnning">
-      <input type="radio" id="one" value="0" v-model="picked" />
-      <label for="one">no timer</label>
-      <input type="radio" id="5min" value= 300 v-model="picked" />
-      <label for="5">5 min</label>
-      <input type="radio" id="10min" value= 600 v-model="picked" />
-      <label for="10">10 min</label>
-      <input type="radio" id="15min" value=900 v-model="picked" />
-      <label for="15">15 min</label>
-      <input type="radio" id="20min" value=1200 v-model="picked" />
-      <label for="20">20 min</label>
+      <h5>How long do you want to practice for?</h5>
+      <div>
+        <input type="radio" id="one" value="0" v-model="picked" />
+        <label for="one">no timer</label>
+        <input type="radio" id="5min" value= 300 v-model="picked" />
+        <label for="5">5 min</label>
+        <input type="radio" id="10min" value= 600 v-model="picked" />
+        <label for="10">10 min</label>
+        <input type="radio" id="15min" value=900 v-model="picked" />
+        <label for="15">15 min</label>
+        <input type="radio" id="20min" value=1200 v-model="picked" />
+        <label for="20">20 min</label>
+      </div>
     </div>
     <!-- <div>
       <label for="time">time between questions</label>
