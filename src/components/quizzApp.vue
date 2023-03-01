@@ -53,6 +53,7 @@
   </div>
   <div class="report" v-show="showReport">
     <h3>Session Report</h3>
+    <p>{{ correctCounter }} / {{ total }}</p>
     <span> You got {{ Math.round((correctCounter/total) * 100)|| 0}}%</span>
     <div v-if="wrongAnswers.length != 0">
       <h5>Wrong answers : {{ total - correctCounter }}</h5>
