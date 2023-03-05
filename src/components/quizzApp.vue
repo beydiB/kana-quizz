@@ -2,7 +2,7 @@
 <section class="container">
   <h1>Practice Hiragana & Katakana</h1>
   <Vue3Lottie v-show="!isRUnning" :animationData="lottie" :height="200" :width="200" />
-  <div class="timeLeft" v-show="!showReport"><span>{{ time }}</span></div>
+  <div class="timeLeft" v-show="!showReport && time != 0"><span>{{ time }}</span></div>
   <div v-show="isRUnning">
     <div class="counter" v-show="total">{{ correctCounter }} / {{ total }}</div>
     <div class="kana"> <h2>{{ currentKana.kana }}</h2> </div>
@@ -13,7 +13,7 @@
   <div v-show="!isRUnning"><button @click="restart">Start Quizz</button></div>
   <!-- option -->
   <div class="options">
-    <div>
+    <div class="inlineBlock">
       <input v-model="options" 
            type="checkbox" 
            value="hiragana" 
@@ -22,7 +22,7 @@
             />
       <label for="hiragana">hiragana</label>
     </div>
-    <div>
+    <div class="inlineBlock">
       <input v-model="options" 
            type="checkbox" 
            value="katakana" 
@@ -44,6 +44,15 @@
         <label for="15">15 min</label>
         <input type="radio" id="20min" value=1200 v-model="picked" />
         <label for="20">20 min</label>
+      </div>
+      <h5>Time limit per question</h5>
+      <div>
+        <input type="radio" value="0" v-model="questionTimer" />
+        <label for="one">no timer</label>
+        <input type="radio" id="5sec" value= 5 v-model="questionTimer" />
+        <label for="5">5 seconds</label>
+        <input type="radio" id="10sec" value= 10 v-model="questionTimer" />
+        <label for="10">10 seconds</label>
       </div>
     </div>
     <!-- <div>
@@ -99,6 +108,7 @@ export default {
       lottie: lottie,
       sessionTimeLimit: 0,
       picked: 0,
+      questionTimer: 0,
       timeInterval: 0
 
     }
@@ -150,9 +160,9 @@ export default {
     },
     start(){
       let temp = this.currentKana
-      this.time = 5
+      this.time = this.questionTimer
       this.isRUnning = true
-      if(this.isRUnning) {
+      if(this.isRUnning && this.time != 0) {
         this.timer = setInterval(() => {
         this.time --
         if(this.time < 0) {
@@ -301,5 +311,10 @@ button{
 }
 h5{
   margin-bottom: 5px;
+}
+
+.inlineBlock {
+  display: inline-block;
+  margin-right: 50px;
 }
 </style>
