@@ -17,7 +17,7 @@ Kana-Quizz offers several features to enhance your learning experience:
 
 ## TODO
 
-In the future, I plan to add a vocabulary quizz for the most used words Kana-Quizz to further enhance your Japanese language learning experience.
+In the future, I plan to add a vocabulary quizz for the top 1000 most used words to further enhance your Japanese language learning experience.
 
 
 I hope you enjoy using Kana-Quizz and find it useful in your language learning journey!
